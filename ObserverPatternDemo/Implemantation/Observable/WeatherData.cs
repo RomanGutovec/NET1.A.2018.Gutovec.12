@@ -25,12 +25,25 @@ namespace ObserverPatternDemo.Implemantation.Observable
 
         public void Register(IObserver<WeatherInfo> observer)
         {
+            if (observer == null)
+            {
+                throw new ArgumentNullException($"Observer {nameof(observer)} inputed incorrect");
+            }
+
             observers.Add(observer);
         }
 
         public void Unregister(IObserver<WeatherInfo> observer)
         {
-            observers.Remove(observer);
+            if (observer == null)
+            {
+                throw new ArgumentNullException($"Observer {nameof(observer)} inputed incorrect");
+            }
+
+            if (observers.Contains(observer))
+            {
+                observers.Remove(observer);
+            }
         }
     }
 }
