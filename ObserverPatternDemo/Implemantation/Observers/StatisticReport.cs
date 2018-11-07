@@ -4,36 +4,34 @@ using ObserverPatternDemo.Implemantation.Observable;
 
 namespace ObserverPatternDemo.Implemantation.Observers
 {
-    public class StatisticReport : IObserver<WeatherInfo>
+    public class StatisticReport
     {
-        private List<WeatherInfo> historyWeather;
+        private List<WeatherEventArgs> historyWeather;
 
         public StatisticReport()
         {
-            historyWeather = new List<WeatherInfo>();
+            historyWeather = new List<WeatherEventArgs>();
         }
 
-        public void Update(IObservable<WeatherInfo> sender, WeatherInfo info)
+        public void Register(WeatherData data)
         {
-            if (info == null)
-            {
-                throw new ArgumentNullException($"Incorrect data of {nameof(sender)}");
-            }
-
-            if (info == null)
-            {
-                throw new ArgumentNullException($"Incorrect data of {nameof(info)}");
-            }
-
-            historyWeather.Add(info);
-            WeatherInfo averageData = CalculateWeatherData(info);
-            Console.WriteLine($"\nCurrent Statistic Report\n" +
-                $"average Temperature: {averageData.Temperature}" +
-                $"average Humidity: {info.Humidity} " +
-                $"average Pressure: {averageData.Pressure} ");
+            data.WeatherChanged += Message;
         }
 
-        private WeatherInfo CalculateWeatherData(WeatherInfo info)
+        public void Unregister(WeatherData data)
+        {
+            data.WeatherChanged -= Message;
+        }
+
+        private void Message(object sender, WeatherEventArgs eventArgs)
+        {
+            Console.WriteLine("Statistic report message:");
+            historyWeather.Add(eventArgs);
+            WeatherEventArgs newWeather = CalculateWeatherData(eventArgs);
+            Console.WriteLine("Temperature = {0}, Humidity = {1}, Pressure = {2}", newWeather.Temperature, newWeather.Humidity, newWeather.Pressure);
+        }
+
+        private WeatherEventArgs CalculateWeatherData(WeatherEventArgs info)
         {
             int averageTemperature = 0;
             int averageHumidity = 0;
@@ -49,7 +47,7 @@ namespace ObserverPatternDemo.Implemantation.Observers
             averageTemperature /= historyWeather.Count;
             averageHumidity /= historyWeather.Count;
             averagePressure /= historyWeather.Count;
-            WeatherInfo averageData = new WeatherInfo()
+            WeatherEventArgs averageData = new WeatherEventArgs()
             {
                 Temperature = averageTemperature,
                 Humidity = averageHumidity,

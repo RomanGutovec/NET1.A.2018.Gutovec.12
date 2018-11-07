@@ -1,49 +1,89 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace ObserverPatternDemo.Implemantation.Observable
 {
-    public class WeatherData : IObservable<WeatherInfo>
+    public class WeatherData
     {
-        private List<IObserver<WeatherInfo>> observers;
-        private WeatherInfo currentWeather;
+        private WeatherEventArgs currentWeather;
+        private int measurePeriodSeconds;
+        private int intervaMeasurelSeconds;
 
-        public WeatherData()
+        public WeatherData(int measurePeriodSeconds, int intervalSeconds)
         {
-            observers = new List<IObserver<WeatherInfo>>();
-            currentWeather = new WeatherInfo();
+            currentWeather = new WeatherEventArgs();
+            IntervaMeasurelSeconds = intervalSeconds;
+            MeasurePeriodSeconds = measurePeriodSeconds;
         }
 
-        public void Notify(IObservable<WeatherInfo> sender, WeatherInfo info)
+        public event EventHandler<WeatherEventArgs> WeatherChanged = delegate { };
+
+        public int MeasurePeriodSeconds
         {
-            currentWeather = info;
-            foreach (var observer in observers)
+            get
             {
-                observer.Update(sender, currentWeather);
+                return measurePeriodSeconds;
+            }
+
+            set
+            {
+                if (value <= 0)
+                {
+                    throw new ArgumentNullException($"Incorrect inputed value");
+                }
+
+                measurePeriodSeconds = value;
             }
         }
 
-        public void Register(IObserver<WeatherInfo> observer)
+        public int IntervaMeasurelSeconds
         {
-            if (observer == null)
+            get
             {
-                throw new ArgumentNullException($"Observer {nameof(observer)} inputed incorrect");
+                return intervaMeasurelSeconds;
             }
 
-            observers.Add(observer);
+            set
+            {
+                if (value <= 0)
+                {
+                    throw new ArgumentNullException($"Incorrect inputed value");
+                }
+
+                intervaMeasurelSeconds = value;
+            }
         }
 
-        public void Unregister(IObserver<WeatherInfo> observer)
+        public void StartMeasure()
         {
-            if (observer == null)
+            for (int i = 0; i < measurePeriodSeconds / IntervaMeasurelSeconds; i++)
             {
-                throw new ArgumentNullException($"Observer {nameof(observer)} inputed incorrect");
-            }
+                Console.WriteLine($"\nNew weather data...\n");
 
-            if (observers.Contains(observer))
-            {
-                observers.Remove(observer);
+                WeatherEventArgs newWeather = GetNewWeather();
+                OnWeatherChanged(this, newWeather);
+                Console.WriteLine(new string('-', 70));
+                Thread.Sleep(IntervaMeasurelSeconds * 1000);
             }
+        }
+
+        protected virtual void OnWeatherChanged(object sender, WeatherEventArgs e)
+        {
+            WeatherChanged?.Invoke(this, e);
+        }
+
+        private WeatherEventArgs GetNewWeather()
+        {
+            Random random = new Random();
+            WeatherEventArgs newWeather = new WeatherEventArgs()
+            {
+                Temperature = random.Next(10, 20),
+                Humidity = random.Next(60, 100),
+                Pressure = random.Next(600, 700)
+            };
+
+            return newWeather;
         }
     }
 }

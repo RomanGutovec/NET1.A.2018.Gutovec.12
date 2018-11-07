@@ -2,9 +2,8 @@
 
 namespace ObserverPatternDemo.Implemantation.Observable
 {
-    public class WeatherInfo : EventInfo
+    public class WeatherEventArgs : EventInfo
     {
-        //TODO: implement IFormattable
         public int Temperature { get; set; }
 
         public int Humidity { get; set; }

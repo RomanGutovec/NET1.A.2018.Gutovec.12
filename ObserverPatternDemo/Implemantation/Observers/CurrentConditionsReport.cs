@@ -3,19 +3,18 @@ using ObserverPatternDemo.Implemantation.Observable;
 
 namespace ObserverPatternDemo.Implemantation.Observers
 {
-    public class CurrentConditionsReport : IObserver<WeatherInfo>
+    public class CurrentConditionsReport 
     {
-        private WeatherInfo currentWeather;
- 
-        public void Update(IObservable<WeatherInfo> sender, WeatherInfo info)
-        {
-            if (info == null)
-            {
-                throw new ArgumentNullException($"Incorrect data of {nameof(sender)}");
-            }
+        private WeatherEventArgs currentWeather;
 
-            currentWeather = info ?? throw new ArgumentNullException($"Incorrect data of {nameof(info)}");
-            Console.WriteLine(ToString());
+        public void Register(WeatherData data)
+        {
+            data.WeatherChanged += Message;
+        }
+
+        public void Unregister(WeatherData data)
+        {
+            data.WeatherChanged -= Message;
         }
 
         public override string ToString()
@@ -24,6 +23,13 @@ namespace ObserverPatternDemo.Implemantation.Observers
                 $"current Temperature: {currentWeather.Temperature}" +
                 $"current Humidity: {currentWeather.Humidity}" +
                 $"current Pressure: {currentWeather.Pressure}";
+        }
+
+        private void Message(object sender, WeatherEventArgs eventArgs)
+        {
+            currentWeather = eventArgs ?? throw new ArgumentNullException($"Incorrect data of {nameof(eventArgs)}");
+            Console.WriteLine("Current report message:");
+            Console.WriteLine("Temperture = {0}, Humidity = {1}, Pressure = {2}\n", eventArgs.Temperature, eventArgs.Humidity, eventArgs.Pressure);
         }
     }
 }

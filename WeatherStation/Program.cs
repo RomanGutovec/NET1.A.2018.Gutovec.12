@@ -18,37 +18,14 @@ namespace WeatherStation
             Console.WriteLine("Create Statistic Report");
             StatisticReport statisticReport = new StatisticReport();
             Console.WriteLine("Create observable object: Weather data");
-            WeatherData weatherData = new WeatherData();
+            WeatherData weatherData = new WeatherData(50, 2);
             Console.WriteLine("Register observers Current Conditions Report and Statistic Report");
-            weatherData.Register(conditionsReport);
-            weatherData.Register(statisticReport);
 
-            WeatherInfo dataAboutWeather = new WeatherInfo()
-            { Humidity = 80, Pressure = 750, Temperature = 18 };
-            weatherData.Notify(weatherData, dataAboutWeather);
-            
-            for (int i = 0; i < 5; i++)
-            {
-                Console.WriteLine($"\nNew weather came...\n");
-                weatherData.Notify(weatherData, GetNewWeather());
-                Console.WriteLine(new string('-', 70));
+            conditionsReport.Register(weatherData);
+            statisticReport.Register(weatherData);
 
-                Thread.Sleep(4000);
-            }
- 
+            weatherData.StartMeasure();
             Console.ReadLine();
-            WeatherInfo GetNewWeather()
-            {
-                Random random = new Random();
-                WeatherInfo newWeather = new WeatherInfo()
-                {
-                    Temperature = random.Next(10, 20),
-                    Humidity = random.Next(60, 100),
-                    Pressure = random.Next(600, 700)
-                };
-
-                return newWeather;
-            }
         }
     }
 }
