@@ -2,7 +2,7 @@
 
 namespace ObserverPatternDemo.Implemantation.Observable
 {
-    public class WeatherEventArgs : EventInfo
+    public class WeatherEventArgs : EventArgs
     {
         public int Temperature { get; set; }
 

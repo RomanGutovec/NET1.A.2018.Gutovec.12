@@ -60,7 +60,6 @@ namespace ObserverPatternDemo.Implemantation.Observable
             for (int i = 0; i < measurePeriodSeconds / IntervaMeasurelSeconds; i++)
             {
                 Console.WriteLine($"\nNew weather data...\n");
-
                 WeatherEventArgs newWeather = GetNewWeather();
                 OnWeatherChanged(this, newWeather);
                 Console.WriteLine(new string('-', 70));
